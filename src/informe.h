@@ -11,7 +11,7 @@
 #define FALSE 0
 
 int informe_calcularTotalAvisos(Aviso* pArray,int len,int id,int *pResultado);
-int aviso_imprimirClienteMasCantidadAvisos(Aviso* pArray,int lenAviso,Cliente* pArrayCliente,int lenCliente);
+int informe_imprimirClienteMayorCantidadAvisos(Aviso* pArray,int lenAviso,Cliente* pArrayCliente,int lenCliente);
 int informe_cantidadAvisosPausados(Aviso* pArray,int len);
 int informe_subMenu(int* pOpcion);
 

@@ -4,14 +4,15 @@
  *  Created on: 13 oct. 2020
  *      Author: Gonzalo
  */
-
+#include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-
 #include "utn.h"
 #include "cliente.h"
 #include "aviso.h"
 #include "informe.h"
+
 
 #define QTY_CUIT 13
 #define QTY_CLIENTE 100
@@ -40,7 +41,7 @@ int informe_calcularTotalAvisos(Aviso* pArray,int len,int id,int *pResultado)
 	return retorno;
 }
 
-int informe_imprimirClienteMasCantidadAvisos(Aviso* pArray,int lenAviso,Cliente* pArrayCliente,int lenCliente)
+int informe_imprimirClienteMayorCantidadAvisos(Aviso* pArray,int lenAviso,Cliente* pArrayCliente,int lenCliente)
 {
 	int retorno=-1;
 	int indiceCliente;

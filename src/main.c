@@ -14,6 +14,7 @@
 #include "aviso.h"
 #include "utn.h"
 #include "cliente.h"
+#include "informe.h"
 
 #define QTY_CLIENTES 100
 #define QTY_AVISOS 1000
@@ -83,11 +84,11 @@ int main(void) {
 					}
 				break;
 			case 8:
-					informe_subMenu(subMenu);
-					switch(subMenu)
+
+					switch(informe_subMenu(&subMenu))
 					{
 						case 1:
-							informe_imprimirClienteMasCantidadAvisos(aAviso,QTY_AVISOS,aCliente,QTY_CLIENTES);
+							informe_imprimirClienteMayorCantidadAvisos(aAviso,QTY_AVISOS,aCliente,QTY_CLIENTES);
 							break;
 						case 2:
 							informe_cantidadAvisosPausados(aAviso,QTY_AVISOS);
