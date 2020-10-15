@@ -103,6 +103,13 @@ int main(void) {
 						case 3:
 							informe_rubroMayorCantidadAvisos(aAviso,QTY_AVISOS);
 							break;
+						case 4:
+							informe_imprimirClienteMayorCantidadAvisosPausados(aAviso,QTY_AVISOS,aCliente,QTY_CLIENTES);
+							break;
+						case 5:
+							informe_imprimirClienteMayorCantidadAvisosActivos(aAviso,QTY_AVISOS,aCliente,QTY_CLIENTES);
+							break;
+
 					}
 				break;
 		}

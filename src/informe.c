@@ -17,9 +17,10 @@
 #define QTY_CUIT 13
 #define QTY_CLIENTE 100
 #define QTY_AVISOS 1000
+//b) Cliente con más avisos activos. c) Cliente con más avisos pausados
 
 /*
- * brief Calcula el total de avisos activos que tiene cada cliente
+ * brief Calcula el total de avisos que tiene cada cliente
  * param Aviso* pArray lista de avisos
  * param limite cantidad de posiciones que tiene la lista de Avisos
  * param id ID del cliente a contarle sus avisos
@@ -36,7 +37,7 @@ int informe_calcularTotalAvisos(Aviso* pArray,int len,int id,int *pResultado)
 	{
 		for(indiceAviso=0;indiceAviso<len;indiceAviso++)
 		{
-			if(pArray[indiceAviso].isEmpty==FALSE && id==pArray[indiceAviso].idCliente && pArray[indiceAviso].isActive==ACTIVO)
+			if(pArray[indiceAviso].isEmpty==FALSE && id==pArray[indiceAviso].idCliente)
 			{
 				contadorAvisos++;
 				retorno=0;
@@ -67,7 +68,7 @@ int informe_imprimirClienteMayorCantidadAvisos(Aviso* pArray,int lenAviso,Client
 	{
 		for(indiceCliente=0;indiceCliente<lenCliente;indiceCliente++)
 		{
-			if(aviso_cantidadAvisos(pArray,lenAviso,pArrayCliente[indiceCliente].idCliente,&cantidadAvisos)==0)
+			if(informe_calcularTotalAvisos(pArray,lenAviso,pArrayCliente[indiceCliente].idCliente,&cantidadAvisos)==0)
 			{
 				if(banderaPrimerNumero==TRUE || maximoAvisos<cantidadAvisos)
 				{
@@ -81,8 +82,15 @@ int informe_imprimirClienteMayorCantidadAvisos(Aviso* pArray,int lenAviso,Client
 			}
 		}
 	}
-	printf("\n\n%s %s Es el cliente con mas avisos activos, la cantidad es: %d\n\n",bufferCliente.nombreCliente,
-																				bufferCliente.apellidoCliente,maximoAvisos);
+	if(retorno==0)
+	{
+		printf("\n\n%s %s Es el cliente con mas avisos, la cantidad es: %d\n\n",bufferCliente.nombreCliente,
+																					bufferCliente.apellidoCliente,maximoAvisos);
+	}
+	else
+	{
+		printf("\nNo hay clientes con avisos cargados");
+	}
 	return retorno;
 }
 /*
@@ -104,6 +112,7 @@ int informe_cantidadAvisosPausados(Aviso* pArray,int limite)
 			if(pArray[i].isEmpty== FALSE && pArray[i].isActive==PAUSADO)
 			{
 				contadorAvisosPausados++;
+				retorno=0;
 			}
 		}
 	}
@@ -205,9 +214,165 @@ int informe_subMenu(int* pOpcion)
 	printf("*>OPCION 1: CLIENTES CON MAS AVISOS.\n");
 	printf("*>OPCION 2: CANTIDAD DE AVISOS PAUSADOS.\n");
 	printf("*>OPCION 3: RUBRO CON MAS AVISOS.\n");
-	printf("*>OPCION 4: VOLVER AL MENU PRINCIPAL.\n");
+	printf("*>OPCION 4: CLIENTES CON MAS AVISOS PAUSADOS.\n");
+	printf("*>OPCION 5: CLIENTES CON MAS AVISOS ACTIVOS.\n");
+	printf("*>OPCION 6: VOLVER AL MENU PRINCIPAL.\n");
 
-	getInt("\ningresa la opcion: ","Error",&retorno,3,4,1);
+	getInt("\ningresa la opcion: ","Error",&retorno,3,6,1);
 	*pOpcion=retorno;
+	return retorno;
+}
+
+
+/*
+ * brief Calcula el total de avisos pausados que tiene cada cliente
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param id ID del cliente a contarle sus avisos
+ * param *pResultado Direccion de memoria donde se escribira el resultado obtenido
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+int informe_calcularTotalAvisosDeClientesPausados(Aviso* pArray,int len,int id,int *pResultado)
+{
+	int retorno=-1;
+	int indiceAviso;
+	int contadorAvisos=0;
+
+	if(pArray!=NULL && len>0 && id>0 && pResultado!=NULL)
+	{
+		for(indiceAviso=0;indiceAviso<len;indiceAviso++)
+		{
+			if(pArray[indiceAviso].isEmpty==FALSE && id==pArray[indiceAviso].idCliente && pArray[indiceAviso].isActive==PAUSADO)
+			{
+				contadorAvisos++;
+				retorno=0;
+			}
+		}
+	}
+	*pResultado=contadorAvisos;
+	return retorno;
+}
+/*
+ * brief Imprime el cliente con la mayor cantidad de avisos pausados
+ * param Aviso* pArray lista de avisos
+ * param lenAvisos cantidad de posiciones que tiene la lista de Avisos
+ * param Cliente pArrayCliente Lista de clientes
+ * param lenCliente Cantidad de posiciones que tiene la lista de Clientes
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+int informe_imprimirClienteMayorCantidadAvisosPausados(Aviso* pArray,int lenAviso,Cliente* pArrayCliente,int lenCliente)
+{
+	int retorno=-1;
+	int indiceCliente;
+	int cantidadAvisos;
+	int banderaPrimerNumero=TRUE;
+	int maximoAvisos;
+	Cliente bufferCliente;
+
+	if(pArray!=NULL && lenAviso>0 && pArrayCliente!=NULL && lenCliente>0)
+	{
+		for(indiceCliente=0;indiceCliente<lenCliente;indiceCliente++)
+		{
+			if(informe_calcularTotalAvisosDeClientesPausados(pArray,lenAviso,pArrayCliente[indiceCliente].idCliente,&cantidadAvisos)==0)
+			{
+				if(banderaPrimerNumero==TRUE || maximoAvisos<cantidadAvisos)
+				{
+					banderaPrimerNumero=FALSE;
+					maximoAvisos=cantidadAvisos;
+					strncpy(bufferCliente.nombreCliente,pArrayCliente[indiceCliente].nombreCliente,LONG_NOMBRE);
+					strncpy(bufferCliente.apellidoCliente,pArrayCliente[indiceCliente].apellidoCliente,LONG_NOMBRE);
+
+					retorno=0;
+				}
+
+
+
+			}
+		}
+	}
+	if(retorno==0)
+	{
+		printf("\n\n%s %s Es el cliente con mas avisos pausados, la cantidad es: %d\n\n",bufferCliente.nombreCliente,
+																						bufferCliente.apellidoCliente,maximoAvisos);
+	}
+	else
+	{
+		printf("\nNo hay clientes con avisos pausados");
+	}
+	return retorno;
+}
+
+/*
+ * brief Calcula el total de avisos activos que tiene cada cliente
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param id ID del cliente a contarle sus avisos
+ * param *pResultado Direccion de memoria donde se escribira el resultado obtenido
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+int informe_calcularTotalAvisosDeClientesActivos(Aviso* pArray,int len,int id,int *pResultado)
+{
+	int retorno=-1;
+	int indiceAviso;
+	int contadorAvisos=0;
+
+	if(pArray!=NULL && len>0 && id>0 && pResultado!=NULL)
+	{
+		for(indiceAviso=0;indiceAviso<len;indiceAviso++)
+		{
+			if(pArray[indiceAviso].isEmpty==FALSE && id==pArray[indiceAviso].idCliente && pArray[indiceAviso].isActive==ACTIVO)
+			{
+				contadorAvisos++;
+				retorno=0;
+			}
+		}
+	}
+	*pResultado=contadorAvisos;
+	return retorno;
+}
+/*
+ * brief Imprime el cliente con la mayor cantidad de avisos activos
+ * param Aviso* pArray lista de avisos
+ * param lenAvisos cantidad de posiciones que tiene la lista de Avisos
+ * param Cliente pArrayCliente Lista de clientes
+ * param lenCliente Cantidad de posiciones que tiene la lista de Clientes
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+int informe_imprimirClienteMayorCantidadAvisosActivos(Aviso* pArray,int lenAviso,Cliente* pArrayCliente,int lenCliente)
+{
+	int retorno=-1;
+	int indiceCliente;
+	int cantidadAvisos;
+	int banderaPrimerNumero=TRUE;
+	int maximoAvisos;
+	Cliente bufferCliente;
+
+	if(pArray!=NULL && lenAviso>0 && pArrayCliente!=NULL && lenCliente>0)
+	{
+		for(indiceCliente=0;indiceCliente<lenCliente;indiceCliente++)
+		{
+			if(informe_calcularTotalAvisosDeClientesActivos(pArray,lenAviso,pArrayCliente[indiceCliente].idCliente,&cantidadAvisos)==0)
+			{
+				if(banderaPrimerNumero==TRUE || maximoAvisos<cantidadAvisos)
+				{
+					banderaPrimerNumero=FALSE;
+					maximoAvisos=cantidadAvisos;
+					strncpy(bufferCliente.nombreCliente,pArrayCliente[indiceCliente].nombreCliente,LONG_NOMBRE);
+					strncpy(bufferCliente.apellidoCliente,pArrayCliente[indiceCliente].apellidoCliente,LONG_NOMBRE);
+
+					retorno=0;
+				}
+			}
+		}
+	}
+	if(retorno==0)
+	{
+		printf("\n\n%s %s Es el cliente con mas avisos activos, la cantidad es: %d\n\n",bufferCliente.nombreCliente,
+																						bufferCliente.apellidoCliente,maximoAvisos);
+	}
+	else
+	{
+		printf("No hay clientes con avisos activos");
+	}
 	return retorno;
 }

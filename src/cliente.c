@@ -318,11 +318,11 @@ int cliente_buscarIndicePorId (Cliente * pArray, int limite,int idBuscar,int * p
 {
 	int retorno = -1;
 	int i ;
-		if (pArray != NULL && limite >0 && pIndice != NULL && idBuscar >= 0)
+		if (pArray != NULL && limite >0 && pIndice != NULL && idBuscar > 0)
 		{
 				for ( i = 0; i<limite; i++)
 				{
-					if(pArray[i].idCliente == idBuscar)
+					if( idBuscar == pArray[i].idCliente && pArray[i].isEmpty == FALSE)
 					{
 						*pIndice = i;
 						retorno = 0;

@@ -18,4 +18,12 @@ int informe_rubroMayorCantidadAvisos(Aviso* pArrayAviso,int lenAviso);
 
 int informe_subMenu(int* pOpcion);
 
+int informe_calcularTotalAvisosDeClientesPausados(Aviso* pArray,int len,int id,int *pResultado);
+int informe_imprimirClienteMayorCantidadAvisosPausados(Aviso* pArray,int lenAviso,Cliente* pArrayCliente,int lenCliente);
+
+
+int informe_calcularTotalAvisosDeClientesActivos(Aviso* pArray,int len,int id,int *pResultado);
+int informe_imprimirClienteMayorCantidadAvisosActivos(Aviso* pArray,int lenAviso,Cliente* pArrayCliente,int lenCliente);
+
+
 #endif /* INFORME_H_ */
