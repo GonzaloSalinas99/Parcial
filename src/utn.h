@@ -17,8 +17,8 @@ int utn_getDireccion(char* mensaje,char* mensajeError,char* pResultado, int rein
 int esAlfaNumerica(char* pResultado);
 int utn_getCuit(char* mensaje,char* mensajeError,int* pResultado, int reintentos, int limite);
 int esCuit(char* pResultado);
-int esConfirmacion(char* pResultado);
-int getConfirmacion(char* mensaje,char* mensajeError,char* pResultado, int reintentos, int limite);
+int getTexto(char* mensaje,char* mensajeError,char* pResultado, int reintentos, int limite);
+int esUnTextoValido(char* cadena,int limite);
 
 
 

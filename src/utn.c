@@ -351,34 +351,22 @@ int esCuit(char* pResultado)
 	return retorno;
 }
 
-int getConfirmacion(char* mensaje,char* mensajeError,char* pResultado, int reintentos, int limite)
+int getTexto(char* mensaje,char* mensajeError,char* pResultado, int reintentos, int limite)
 {
-	int retorno=-1;
-
-	char bufferChar[3];
+	int retorno = -1;
+	char bufferChar[LIMITE_NOMBRE];
 
 	if(mensaje!=NULL && mensajeError!=NULL && pResultado!=NULL && reintentos>0 && limite > 0)
 	{
 		do
 		{
 			printf("%s",mensaje);
-			if(myGets(bufferChar,3) == 0 && strnlen(bufferChar,sizeof(bufferChar)-1)<= limite)
+			if(myGets(bufferChar,LIMITE_NOMBRE) == 0 && strnlen(bufferChar,sizeof(bufferChar)-1)<= limite &&
+					esUnTextoValido(bufferChar,limite) != 0 )
 			{
-				if(esConfirmacion(bufferChar)==0)
-				{
-					retorno=0;
-					strncpy(pResultado,bufferChar,limite);
-					break;
-				}
-				else
-				{
-					if(esConfirmacion(bufferChar)==1)
-					{
-						retorno=1;
-						strncpy(pResultado,bufferChar,limite);
-						break;
-					}
-				}
+				retorno=0;
+				strncpy(pResultado,bufferChar,limite);
+				break;
 			}
 			else
 			{
@@ -388,33 +376,22 @@ int getConfirmacion(char* mensaje,char* mensajeError,char* pResultado, int reint
 		}while(reintentos>=0);
 
 	}
-
-	return retorno;
+return retorno;
 }
-
-int esConfirmacion(char* pResultado)
+int esUnTextoValido(char* cadena,int limite)
 {
-	int retorno=-1;
-	int i;
+	int respuesta = 1;
+	for(int i=0; i<=limite && cadena[i] != '\0';i++)
+	{
 
-	if(pResultado != NULL){
-		for(i=0;pResultado[i] != '\0';i++)
+		if(	(cadena[i] < 'A' || cadena[i] > 'Z') &&
+			(cadena[i] < 'a' || cadena[i] > 'z') &&
+			cadena[i]!=' ' && cadena[i]!='.' && cadena[i]!='@' &&
+			(cadena[i]<'0' || cadena[i]>'9'))
 		{
-			if((pResultado[i] != ' ') && (pResultado[i] == 's' || pResultado[i] == 'i'))
-			{
-				retorno = 0;
-				break;
-			}
-			else
-			{
-				if((pResultado[i] != ' ') && (pResultado[i] == 'n' || pResultado[i] == 'o'))
-				{
-					retorno = 1;
-					break;
-				}
-			}
+			respuesta = 0;
+			break;
 		}
 	}
-
-	return retorno;
+	return respuesta;
 }

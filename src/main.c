@@ -27,14 +27,21 @@ int main(void) {
 	Cliente aCliente[QTY_CLIENTES];
 	Aviso aAviso[QTY_AVISOS];
 
-
 	cliente_init(aCliente,QTY_CLIENTES);
 	aviso_init(aAviso,QTY_AVISOS);
-	cliente_hardcodeo(aCliente,0,"Gonzalo","Salinas",42038608,1);
-	cliente_hardcodeo(aCliente,1,"Facundo","Salinas",424588608,2);
-	cliente_hardcodeo(aCliente,2,"Franco","Alvarez",41587568,3);
-	cliente_hardcodeo(aCliente,3,"Lucia","Pereyra",15889148,4);
-	cliente_hardcodeo(aCliente,4,"Elias","Troncoso",4258746,5);
+
+	cliente_hardcodeo(aCliente,0,"Gonzalo","Salinas",42038608,100);
+	cliente_hardcodeo(aCliente,1,"Facundo","Salinas",424588608,222);
+	cliente_hardcodeo(aCliente,2,"Franco","Alvarez",41587568,315);
+	cliente_hardcodeo(aCliente,3,"Lucia","Pereyra",15889148,109);
+	cliente_hardcodeo(aCliente,4,"Elias","Troncoso",4258746,503);
+
+	aviso_hardcodeo( aAviso,0,"LALAAA",3,100,1);
+	aviso_hardcodeo( aAviso,1,"GONZAAA",3,222,2);
+	aviso_hardcodeo( aAviso,2,"LALAAA",3,100,3);
+	aviso_hardcodeo( aAviso,3,"LALAAA",2,100,4);
+	aviso_hardcodeo( aAviso,4,"LALAAA",2,503,5);
+
 	do
 	{
 		switch(cliente_menu(&opcion))
@@ -42,21 +49,21 @@ int main(void) {
 			case 1:
 					if(cliente_alta(aCliente,QTY_CLIENTES)==0)
 					{
-						printf("ALTA EXITOSA");
+						printf("\nALTA EXITOSA");
 					}
 				break;
 
 			case 2:
 					if(cliente_modificar(aCliente,QTY_CLIENTES)==0)
 					{
-						printf("MODIFICACION EXITOSA");
+						printf("\nMODIFICACION EXITOSA");
 					}
 				break;
 
 			case 3:
 					if(aviso_baja(aAviso,QTY_AVISOS,aCliente,QTY_CLIENTES)==0)
 					{
-						printf("BAJA EXITOSA");
+						printf("\nBAJA EXITOSA");
 					}
 				break;
 			case 4:
@@ -68,19 +75,19 @@ int main(void) {
 			case 5:
 					if(aviso_estadoPublicacionPausa(aAviso,QTY_AVISOS,aCliente,QTY_CLIENTES)==0)
 					{
-						printf("Se modifico con exito");
+						printf("\nSe modifico con exito");
 					}
 				break;
 			case 6:
 					if(aviso_estadoPublicacionActiva(aAviso,QTY_AVISOS,aCliente,QTY_CLIENTES)==0)
 					{
-						printf("Se modifico con exito");
+						printf("\nSe modifico con exito");
 					}
 				break;
 			case 7:
 					if(aviso_imprimirClientesYAvisos(aAviso,QTY_AVISOS,aCliente,QTY_CLIENTES)==0)
 					{
-						printf("Estos son los clientes con su cantidad de avisos");
+						printf("\n\n*Estos son los clientes con su cantidad de avisos activos*\n");
 					}
 				break;
 			case 8:
@@ -92,6 +99,9 @@ int main(void) {
 							break;
 						case 2:
 							informe_cantidadAvisosPausados(aAviso,QTY_AVISOS);
+							break;
+						case 3:
+							informe_rubroMayorCantidadAvisos(aAviso,QTY_AVISOS);
 							break;
 					}
 				break;

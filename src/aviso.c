@@ -16,13 +16,16 @@
 #include "cliente.h"
 #include "aviso.h"
 
-#define QTY_CUIT 13
-#define QTY_CLIENTE 100
-#define QTY_AVISOS 1000
 
 static int aviso_bajaTodasPublicaciones(Aviso* pArray,int len, int idCliente);
 static int aviso_generarNuevoId (void);
 
+/*
+ * brief Inicia la lista en todas sus posiciones como VACIAS
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
 int aviso_init(Aviso * pArray, int limite)
 {
 	int retorno = -1;
@@ -38,7 +41,14 @@ int aviso_init(Aviso * pArray, int limite)
 	return retorno;
 }
 
-
+/*
+ * brief Le da el ALTA al aviso luego de validar todos los datos
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param Cliente pArrayCliente Lista de clientes
+ * param lenCliente Cantidad de posiciones que tiene la lista de Clientes
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
 int aviso_alta(Aviso * pArray, int limite, Cliente* pArrayCliente, int lenCliente)
 {
 	int retorno = -1;
@@ -51,12 +61,12 @@ int aviso_alta(Aviso * pArray, int limite, Cliente* pArrayCliente, int lenClient
 	if (pArray != NULL && limite >0 && pArrayCliente!=NULL && lenCliente>0)
 	{
 		cliente_imprimir(pArrayCliente,lenCliente);
-		if(getInt("\n\ningrese el ID del cliente cargado para contratar el aviso: : ","ERROR",&idABuscar,3,QTY_AVISOS,0)==0 &&
+		if(getInt("\n\ningrese el ID del cliente cargado para contratar el aviso: : ","ERROR",&idABuscar,3,1000,0)==0 &&
 			cliente_buscarIndicePorId(pArrayCliente,lenCliente,idABuscar,&indiceCliente)==0)
 		{
 			if (aviso_buscarLibreRef (pArray, limite, &indice) == 0)
 			{
-					if (getNombre("\nIngrese el texto del aviso", "error",bufferAviso.textoAviso,2,LONG_NOMBRE) == 0 &&
+					if (getTexto("Ingrese el texto del aviso: ", "error",bufferAviso.textoAviso,2,LONG_NOMBRE) == 0 &&
 						getInt("A que rubro pertenece el aviso:\n"
 								"Opcion 1:PROGRAMACION\n"
 								"Opcion 2: GASTRONOMIA\n"
@@ -87,12 +97,14 @@ int aviso_alta(Aviso * pArray, int limite, Cliente* pArrayCliente, int lenClient
 		return retorno ;
 }
 
-
-
-
-
-
-
+/*
+ * brief Le da el BAJA al aviso luego de validar todos los datos
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param Cliente pArrayCliente Lista de clientes
+ * param lenCliente Cantidad de posiciones que tiene la lista de Clientes
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
 
 int aviso_baja (Aviso* pArray, int limite, Cliente* pArrayCliente, int lenCliente)
 {
@@ -104,12 +116,10 @@ int aviso_baja (Aviso* pArray, int limite, Cliente* pArrayCliente, int lenClient
 	if (pArray != NULL && limite>0 && pArrayCliente!=NULL && lenCliente>0)
 	{
 		cliente_imprimir(pArrayCliente, lenCliente);
-
 		if(getInt("Ingrese ID de cliente a borrar","Error",&idABorrar,3,1000,0)==0 &&
 				aviso_buscarIndicePorId(pArray,limite,idABorrar,&indiceABorrar)==0  &&
 				aviso_imprimirPorId(pArray, limite,idABorrar)==0)
 		{
-
 			if( getInt("Desea confirmar la baja?? Ingrese 1-Si o 2-No :","ERROR",&confirmacion,3,2,1)== 0)
 			{
 				if(confirmacion==1 && aviso_bajaTodasPublicaciones(pArray,limite,idABorrar)==0)
@@ -123,6 +133,15 @@ int aviso_baja (Aviso* pArray, int limite, Cliente* pArrayCliente, int lenClient
 	return retorno;
 }
 
+/*
+ * brief Le modifica el campo de ESTADO al Aviso ACTIVO como PAUSADO
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param Cliente pArrayCliente Lista de clientes
+ * param lenCliente Cantidad de posiciones que tiene la lista de Clientes
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+
 int aviso_estadoPublicacionPausa (Aviso * pArray, int limite, Cliente* pArrayCliente, int lenCliente)
 {
 	int retorno = -1;
@@ -130,20 +149,21 @@ int aviso_estadoPublicacionPausa (Aviso * pArray, int limite, Cliente* pArrayCli
 	int indiceAModificar;
 	int confirmacion;
 
-
 	if (pArray != NULL && limite>0 && pArrayCliente!= NULL && lenCliente>0)
 	{
 		aviso_imprimir(pArray,limite);
-		if(getInt("Ingrese el ID de la publicacion a modificar","ERROR",&idBuscar,3,QTY_AVISOS,1)==0 &&
+		if(getInt("Ingrese el ID de la publicacion a modificar","ERROR",&idBuscar,3,1000,1)==0 &&
 			aviso_buscarIndicePorId(pArray, limite, idBuscar, &indiceAModificar) == 0)
 		{
 			if(cliente_imprimirPorId(pArrayCliente, lenCliente,pArray[indiceAModificar].idCliente)==0)
 			{
 				if(getInt("\nEsta seguro de modificar esta publicacion?? Ingrese 1-Si o 2-No : ","Error",&confirmacion,3,2,1)==0)
 				{
-					pArray[indiceAModificar].isActive = PAUSADO;
-					printf("Esta pausada");
-					retorno = 0;
+					if(confirmacion==1)
+					{
+						pArray[indiceAModificar].isActive = PAUSADO;
+						retorno = 0;
+					}
 				}
 				else
 				{
@@ -155,6 +175,15 @@ int aviso_estadoPublicacionPausa (Aviso * pArray, int limite, Cliente* pArrayCli
 return retorno;
 }
 
+/*
+ * brief Le modifica el campo ESTADO del Aviso PAUSADO como ACTIVO
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param Cliente pArrayCliente Lista de clientes
+ * param lenCliente Cantidad de posiciones que tiene la lista de Clientes
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+
 int aviso_estadoPublicacionActiva(Aviso * pArray, int limite, Cliente* pArrayCliente, int lenCliente)
 {
 	int retorno = -1;
@@ -162,20 +191,21 @@ int aviso_estadoPublicacionActiva(Aviso * pArray, int limite, Cliente* pArrayCli
 	int indiceAModificar;
 	int confirmacion;
 
-
 	if (pArray != NULL && limite>0 && pArrayCliente!= NULL && lenCliente>0)
 	{
 		aviso_imprimir(pArray,limite);
-		if(getInt("Ingrese el ID de la publicacion a modificar","ERROR",&idBuscar,3,QTY_AVISOS,1)==0 &&
+		if(getInt("Ingrese el ID de la publicacion a modificar","ERROR",&idBuscar,3,1000,1)==0 &&
 			aviso_buscarIndicePorId(pArray, limite, idBuscar, &indiceAModificar) == 0)
 		{
 			if(cliente_imprimirPorId(pArrayCliente, lenCliente,pArray[indiceAModificar].idCliente)==0)
 			{
 				if(getInt("\nEsta seguro de modificar esta publicacion?? Ingrese 1-Si o 2-No : ","Error",&confirmacion,3,2,1)==0)
 				{
-					pArray[indiceAModificar].isActive = ACTIVO;
-					printf("Esta pausada");
-					retorno = 0;
+					if(confirmacion==1)
+					{
+						pArray[indiceAModificar].isActive = ACTIVO;
+						retorno = 0;
+					}
 				}
 				else
 				{
@@ -188,21 +218,37 @@ return retorno;
 }
 
 
-int aviso_buscarLibre (Aviso * pArray, int limite){
+/*
+ * brief Busca en la lista de Aviso un lugar libre
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * return devuelve la posicion libre en la lista
+ */
+int aviso_buscarLibre (Aviso * pArray, int limite)
+{
 	int retorno = -1;
 	int i ;
-		if (pArray != NULL && limite >0){
-			for ( i = 0; i<limite; i++) {
-				if(pArray[i].isEmpty == TRUE)
-					{
-					retorno = i;
-					break;
-					}
+
+	if (pArray != NULL && limite >0)
+	{
+		for ( i = 0; i<limite; i++)
+		{
+			if(pArray[i].isEmpty == TRUE)
+			{
+				retorno = i;
+				break;
 			}
 		}
+	}
 	return retorno;
 }
-
+/*
+ * brief Busca en la lista de Aviso un lugar libre
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param pIndice direccion de memoria donde se escribiria el resultado
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
 int aviso_buscarLibreRef (Aviso * pArray, int limite, int * pIndice){
 	int retorno = -1;
 	int i ;
@@ -218,13 +264,23 @@ int aviso_buscarLibreRef (Aviso * pArray, int limite, int * pIndice){
 		}
 	return retorno;
 }
-
+/*
+ * brief Genera un ID unico e irrepetible
+ * return Devuelve el ID generado
+ */
 static int aviso_generarNuevoId (void) {
 	static int id = 0;
 	id = id+1;
 	return id;
 }
-
+/*
+ * brief Busca en la lista de Aviso un indice a travez del ID
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param IdBuscar ID que es buscado en la lista de Avisos
+ * param *pindice Direccion de memoria donde se escribira el indice encontrado
+ * return devuelve la posicion libre en la lista
+ */
 int aviso_buscarIndicePorId (Aviso * pArray, int limite,int idBuscar,int * pIndice)
 {
 	int retorno = -1;
@@ -247,59 +303,101 @@ int aviso_buscarIndicePorId (Aviso * pArray, int limite,int idBuscar,int * pIndi
 			}
 		return retorno;
 }
-
+/*
+ * brief Ordenar lista de Avisos de forma Ascendente o Descendente
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param orden Numero ingresado por el usuario para saber de que manera ordenar la lista
+ * return (-1) si ocurrio un error (0) si se pudo ordenar
+ */
 int aviso_ordenarPorNombre (Aviso * pArray, int limite , int orden)
 {
 	int retorno = -1;
 	int estadoDesordenado = 1;
 	Aviso aux;
-	if (pArray != NULL && limite >0){
-	while(estadoDesordenado)
+	if (pArray != NULL && limite >0)
 	{
-		estadoDesordenado = 0;
-		for(int i = 0; i < (limite - 1); i++)
+		while(estadoDesordenado)
 		{
-			if((orden == 1 && strncmp(pArray[i].textoAviso, pArray[i + 1].textoAviso,LONG_NOMBRE)>0)
-					||
-			  (orden == 0 && strncmp(pArray[i].textoAviso, pArray[i + 1].textoAviso,LONG_NOMBRE)<0))
-			{
-				aux = pArray[i];
-				pArray[i] = pArray[i + 1];
-				pArray[i + 1] = aux;
-				estadoDesordenado = 1;
-			}
+			estadoDesordenado = 0;
+				for(int i = 0; i < (limite - 1); i++)
+				{
+					if((orden == 1 && strncmp(pArray[i].textoAviso, pArray[i + 1].textoAviso,LONG_NOMBRE)>0)
+							||
+					  (orden == 0 && strncmp(pArray[i].textoAviso, pArray[i + 1].textoAviso,LONG_NOMBRE)<0))
+					{
+						aux = pArray[i];
+						pArray[i] = pArray[i + 1];
+						pArray[i + 1] = aux;
+						estadoDesordenado = 1;
+					}
+				}
 		}
-	}
 	retorno = 0;
-
-
 	}
 	return retorno;
 }
 
 
-//IMPRIMIR
-
-int aviso_imprimir(Aviso* pArray, int len)
+/*
+ * brief Imprime la lista de Avisos
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+int aviso_imprimir(Aviso* pArray, int limite)
 {
 	int retorno = -1;
-	if(pArray != NULL && len > 0)
+	if(pArray != NULL && limite > 0)
 	{
-		for(int i=0;i<len;i++)
+		printf("ID\tTEXTO DEL AVISO\t\t\tRUBRO\t\tESTADO 1 Pausado 0 Activo");
+		for(int i=0;i<limite;i++)
 		{
 			if(pArray[i].isEmpty == FALSE)
 			{
-				printf("Hola");
+				printf("\n%d\t%s\t\t\t\t%d\t\t\t%d",pArray[i].idAviso,pArray[i].textoAviso,pArray[i].rubroAviso,pArray[i].isActive);
 
 			}
 		}
+		printf("\nRUBROS\n1)=PROGRAMACION 2)= GASTRONOMIA 3)= ELECTRONICA"
+				" 4)= CONSTRUCCION 5)= HOTELERIA\n");
 		retorno = 0;
 	}
 	return retorno;
 }
+/*
+ * brief Imprime la lista lista de Avisos por ID
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param idCliente ID del aviso el cual vamos a imprimir
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+int aviso_imprimirPorId(Aviso* pArray,int limite,int idCliente)
+{
+	int retorno=-1;
+	int i;
 
+	if(pArray!=NULL && limite>0 && idCliente>0)
+	{
+		printf("Publicaciones del cliente con el ID: %d",idCliente);
+		printf("TEXTO DEL AVISO\t\tRUBRO\t\tID DEL AVISO\t\tESTADO");
+		for(i=0;i<limite;i++)
+		{
+			if(pArray[i].idCliente==idCliente && pArray[i].isEmpty==FALSE)
+			{
+				printf("%s\t\t%d\t\t%d\t\t%d",pArray[i].textoAviso,pArray[i].rubroAviso,pArray[i].idAviso,pArray[i].isActive);
+				retorno=0;
+			}
+		}
+	}
+	return retorno;
+}
 
-
+/*
+ *brief Menu de opciones
+ *param int* pOpcion Direccion de memoria de la variable donde escribe el valor ingresado por el usuario
+ *return (0) si se ingreso correctamente la opcion (-1) Si la opcion es invalida
+ */
 int aviso_menu(int* pOpcion)
 {
 	int retorno;
@@ -317,7 +415,11 @@ int aviso_menu(int* pOpcion)
 	*pOpcion=retorno;
 	return retorno;
 }
-
+/*
+ *brief Menu de informes del programa
+ *param int* pOpcion Direccion de memoria de la variable donde escribe el valor ingresado por el usuario
+ *return (0) si se ingreso correctamente la opcion (-1) Si la opcion es invalida
+ */
 int aviso_report(int* pOpcion)
 {
 	int retorno;
@@ -335,36 +437,21 @@ int aviso_report(int* pOpcion)
 	return retorno;
 }
 
-int aviso_imprimirPorId(Aviso* pArray,int len,int idCliente)
+
+/*
+ * brief Da de BAJA a todos los avisos de un Cliente
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param idCliente ID del Cliente el cual borraremos sus avisos
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+static int aviso_bajaTodasPublicaciones(Aviso* pArray,int limite, int idCliente)
 {
 	int retorno=-1;
 	int i;
-
-	if(pArray!=NULL && len>0 && idCliente>0)
+	if(pArray!=NULL && limite>0 && idCliente>0)
 	{
-		printf("Publicaciones del cliente con el ID: %d",idCliente);
-		printf("TEXTO DEL AVISO\t\tRUBRO\t\tID DEL AVISO\t\tESTADO");
-		for(i=0;i<len;i++)
-		{
-			if(pArray[i].idCliente==idCliente && pArray[i].isEmpty==FALSE)
-			{
-				printf("%s\t\t%d\t\t%d\t\t%d",pArray[i].textoAviso,pArray[i].rubroAviso,pArray[i].idAviso,pArray[i].isActive);
-				retorno=0;
-			}
-		}
-
-	}
-
-	return retorno;
-}
-
-static int aviso_bajaTodasPublicaciones(Aviso* pArray,int len, int idCliente)
-{
-	int retorno=-1;
-	int i;
-	if(pArray!=NULL && len>0 && idCliente>0)
-	{
-		for(i=0;i<len;i++)
+		for(i=0;i<limite;i++)
 		{
 			if(pArray[i].idCliente==idCliente)
 			{
@@ -373,21 +460,27 @@ static int aviso_bajaTodasPublicaciones(Aviso* pArray,int len, int idCliente)
 			}
 		}
 	}
-
 	return retorno;
 }
-
-int aviso_cantidadAvisos(Aviso* pArray,int len,int id,int *pResultado)
+/*
+ * brief Contar la cantidad de avisos que tiene cada cliente
+ * param Aviso* pArray lista de avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param idCliente ID del cliente para contar sus avisos
+ * param *pResultado Direccion de memoria donde escribiremos el resultado obtenido
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+int aviso_cantidadAvisos(Aviso* pArray,int limite,int idCliente,int *pResultado)
 {
 	int retorno=-1;
 	int indiceAviso;
 	int contadorAvisos=0;
 
-	if(pArray!=NULL && len>0 && id>0 && pResultado!=NULL)
+	if(pArray!=NULL && limite>0 && idCliente>0 && pResultado!=NULL)
 	{
-		for(indiceAviso=0;indiceAviso<len;indiceAviso++)
+		for(indiceAviso=0;indiceAviso<limite;indiceAviso++)
 		{
-			if(pArray[indiceAviso].isEmpty==FALSE && id==pArray[indiceAviso].idCliente && pArray[indiceAviso].isActive==ACTIVO)
+			if(pArray[indiceAviso].isEmpty==FALSE && idCliente==pArray[indiceAviso].idCliente && pArray[indiceAviso].isActive==ACTIVO)
 			{
 				contadorAvisos++;
 				retorno=0;
@@ -397,23 +490,59 @@ int aviso_cantidadAvisos(Aviso* pArray,int len,int id,int *pResultado)
 	*pResultado=contadorAvisos;
 	return retorno;
 }
-
-int aviso_imprimirClientesYAvisos(Aviso* pArray,int lenAviso,Cliente* pArrayCliente,int lenCliente)
+/*
+ * brief Imprime la lista lista de Clientes y la cantidad de avisos ACTIVOS que tienen
+ * param Aviso* pArray lista de Avisos
+ * param limite cantidad de posiciones que tiene la lista de Avisos
+ * param Cliente* pArrayCliente lista de Clientes
+ * param lenCliente cantidad de posiciones que tiene la lista de Clientes
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+int aviso_imprimirClientesYAvisos(Aviso* pArray,int limite,Cliente* pArrayCliente,int lenCliente)
 {
 	int retorno=-1;
-	int indiceCliente;
-	int cantidadAvisos;
-	if(pArray!=NULL && lenAviso>0 && pArrayCliente!=NULL && lenCliente>0)
+	//int cantidadAvisos;
+	int i;
+	int j;
+	int contadorAvisos=0;
+	if(pArray!=NULL && limite>0 && pArrayCliente!=NULL && lenCliente>0)
 	{
-		for(indiceCliente=0;indiceCliente<lenCliente;indiceCliente++)
+		printf("ID\t NOMBRE \t\t\t\t APELLIDO \t\t\t\t CUIT \t\t AVISOS ACTIVOS");
+		for(i=0;i<lenCliente;i++)
 		{
-			if(aviso_cantidadAvisos(pArray,lenAviso,pArrayCliente[indiceCliente].idCliente,&cantidadAvisos)==0)
+			if(pArrayCliente[i].isEmpty==FALSE)
 			{
-				printf("%d : %d avisos activos.",pArrayCliente[indiceCliente].cuitCliente,cantidadAvisos);
-				retorno=0;
+				for(j=0;j<limite;j++)
+				{
+					if(pArray[j].idCliente==pArrayCliente[i].idCliente && pArray[j].isActive== ACTIVO)
+					{
+						contadorAvisos++;
+					}
+				}
+
+				printf("\n%d\t %s  \t\t\t\t %s  \t\t\t\t %d\t %d",pArrayCliente[i].idCliente,pArrayCliente[i].nombreCliente,pArrayCliente[i].apellidoCliente,pArrayCliente[i].cuitCliente,contadorAvisos);
+				contadorAvisos=0;
 			}
 		}
 	}
-
+	retorno=0;
 	return retorno;
+}
+/*
+ * brief Hardcodea la lista de Avisos
+ * param Aviso* pArray lista de avisos
+ * param indice Posicion de la lista
+ * param *texto Texto a guardar
+ * param rubro Rubro a guardar
+ * param idcliente ID del cliente a guardar
+ * param id ID del aviso a guardar
+ */
+void aviso_hardcodeo(Aviso* pArray,int indice, char* texto,int rubro,int idCliente,int id)
+{
+	strncpy(pArray[indice].textoAviso,texto,LIMITE_NOMBRE);
+	pArray[indice].rubroAviso=rubro;
+	pArray[indice].idCliente=idCliente;
+	pArray[indice].idAviso=id;
+	pArray[indice].isEmpty = FALSE;
+	pArray[indice].isActive=ACTIVO;
 }

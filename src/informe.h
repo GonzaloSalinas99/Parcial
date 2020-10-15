@@ -12,7 +12,10 @@
 
 int informe_calcularTotalAvisos(Aviso* pArray,int len,int id,int *pResultado);
 int informe_imprimirClienteMayorCantidadAvisos(Aviso* pArray,int lenAviso,Cliente* pArrayCliente,int lenCliente);
-int informe_cantidadAvisosPausados(Aviso* pArray,int len);
+
+int informe_cantidadAvisosPausados(Aviso* pArray,int limite);
+int informe_rubroMayorCantidadAvisos(Aviso* pArrayAviso,int lenAviso);
+
 int informe_subMenu(int* pOpcion);
 
 #endif /* INFORME_H_ */
