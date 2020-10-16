@@ -15,9 +15,10 @@
 #include "utn.h"
 #include "cliente.h"
 #include "informe.h"
-
+#include "rubro.h"
 #define QTY_CLIENTES 100
 #define QTY_AVISOS 1000
+#define QTY_RUBROS 1000
 
 int main(void) {
 
@@ -36,11 +37,11 @@ int main(void) {
 	cliente_hardcodeo(aCliente,3,"Lucia","Pereyra",15889148,109);
 	cliente_hardcodeo(aCliente,4,"Elias","Troncoso",4258746,503);
 
-	aviso_hardcodeo( aAviso,0,"LALAAA",3,100,1);
-	aviso_hardcodeo( aAviso,1,"GONZAAA",3,222,2);
-	aviso_hardcodeo( aAviso,2,"LALAAA",3,100,3);
-	aviso_hardcodeo( aAviso,3,"LALAAA",2,100,4);
-	aviso_hardcodeo( aAviso,4,"LALAAA",2,503,5);
+	aviso_hardcodeo( aAviso,0,"LALAAA",1,100,126);
+	aviso_hardcodeo( aAviso,1,"GONZAAA",1,222,257);
+	aviso_hardcodeo( aAviso,2,"LALAAA",2,100,312);
+	aviso_hardcodeo( aAviso,3,"LALAAA",3,100,400);
+	aviso_hardcodeo( aAviso,4,"LALAAA",1,503,512);
 
 	do
 	{
@@ -101,7 +102,7 @@ int main(void) {
 							informe_cantidadAvisosPausados(aAviso,QTY_AVISOS);
 							break;
 						case 3:
-							informe_rubroMayorCantidadAvisos(aAviso,QTY_AVISOS);
+							informe_imprimirRubroConMayorCantidadAviso(aAviso,QTY_AVISOS);
 							break;
 						case 4:
 							informe_imprimirClienteMayorCantidadAvisosPausados(aAviso,QTY_AVISOS,aCliente,QTY_CLIENTES);

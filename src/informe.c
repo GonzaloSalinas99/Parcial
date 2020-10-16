@@ -125,6 +125,7 @@ int informe_cantidadAvisosPausados(Aviso* pArray,int limite)
  * param limite cantidad de posiciones que tiene la lista de Avisos
  * return (-1) si ocurrio un error (0) si salio todo bien
  */
+/*
 int informe_rubroMayorCantidadAvisos(Aviso* pArrayAviso,int limite)
 {
 	int retorno=-1;
@@ -199,7 +200,7 @@ int informe_rubroMayorCantidadAvisos(Aviso* pArrayAviso,int limite)
 
 	return retorno;
 }
-
+*/
 /*
  *brief Menu de opciones
  *param int* pOpcion Direccion de memoria de la variable donde escribe el valor ingresado por el usuario
@@ -284,9 +285,6 @@ int informe_imprimirClienteMayorCantidadAvisosPausados(Aviso* pArray,int lenAvis
 
 					retorno=0;
 				}
-
-
-
 			}
 		}
 	}
@@ -373,6 +371,67 @@ int informe_imprimirClienteMayorCantidadAvisosActivos(Aviso* pArray,int lenAviso
 	else
 	{
 		printf("No hay clientes con avisos activos");
+	}
+	return retorno;
+}
+/*
+ * brief Imprime el rubro con la mayor cantidad de avisos
+ * param Aviso* pArrayAviso lista de avisos
+ * param limiteAvisos cantidad de posiciones que tiene la lista de Avisos
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+int informe_imprimirRubroConMayorCantidadAviso(Aviso *pArrayAviso, int limiteAvisos)
+{
+	int retorno=-1;
+	int contadorAvisos;
+	int maxContadorAvisos;
+	int rubroMayorCantidadAvisos;
+	if(pArrayAviso!=NULL && limiteAvisos)
+	{
+		for(int i=0;i<limiteAvisos;i++)
+		{
+			if(pArrayAviso[i].isEmpty == FALSE && informe_calcularRubroPorAviso(pArrayAviso,limiteAvisos,pArrayAviso[i].rubroAviso, &contadorAvisos)==0)
+			{
+				if(i==0 || contadorAvisos>maxContadorAvisos)
+				{
+					maxContadorAvisos = contadorAvisos;
+					rubroMayorCantidadAvisos = pArrayAviso[i].rubroAviso;
+					retorno=0;
+				}
+			}
+		}
+		printf("\nEl rubro con mas avisos es el  %d  con  %d publicaciones.\n",rubroMayorCantidadAvisos,contadorAvisos);
+	}
+	else
+	{
+		printf("\nNo hay datos cargados.\n");
+	}
+	return retorno;
+}
+
+/*
+ * brief Calcula los rubros que tiene cada Aviso
+ * param Aviso* pArrayAviso lista de avisos
+ * param limiteAviso cantidad de posiciones que tiene la lista de Avisos
+ * param rubro Rubro a contar sus avisos
+ * param *pResultado Direccion de memoria donde se escribira el resultado obtenido
+ * return (-1) si ocurrio un error (0) si salio todo bien
+ */
+int informe_calcularRubroPorAviso(Aviso *pArrayAviso, int limiteAviso, int rubro, int *pResultado)
+{
+	int retorno=-1;
+	int contadorAvisos=0;
+	if(pArrayAviso!=NULL && limiteAviso>0)
+	{
+		for(int i=0;i<limiteAviso;i++)
+		{
+			if(pArrayAviso[i].isEmpty == FALSE && pArrayAviso[i].rubroAviso == rubro)
+			{
+				contadorAvisos++;
+				retorno=0;
+			}
+		}
+		*pResultado = contadorAvisos;
 	}
 	return retorno;
 }

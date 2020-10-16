@@ -188,10 +188,12 @@ int cliente_modificar (Cliente * pArray, int limite)
 
 	if (pArray != NULL && limite>0)
 	{
+		cliente_imprimir(pArray,limite);
 		if(getInt("\ningrese el ID del cliente que quiere modificar: ","ERROR",&idBuscar,3,100,0)==0)
 		{
 			if(cliente_buscarIndicePorId(pArray,limite,idBuscar,&indiceAModificar)==0)
 			{
+				bufferCliente=pArray[indiceAModificar];
 				if (getNombre("Ingrese su nombre: \n", "error",bufferCliente.nombreCliente,2,LIMITE_NOMBRE) == 0 &&
 					getNombre("Ingrese su apellido: \n", "error",bufferCliente.apellidoCliente,2,LIMITE_NOMBRE) == 0 &&
 					utn_getCuit("Ingrese su cuit: ","ERROR",&bufferCliente.cuitCliente,3,QTY_CUIT) == 0)
