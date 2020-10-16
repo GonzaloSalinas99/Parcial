@@ -221,6 +221,7 @@ return retorno;
  */
 int aviso_buscarLibre (Aviso * pArray, int limite)
 {
+
 	int retorno = -1;
 	int i ;
 
