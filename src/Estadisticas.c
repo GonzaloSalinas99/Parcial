@@ -83,3 +83,6 @@ int estadistica_ClienteMasAfiches(LinkedList* listaVentas,LinkedList* listaClien
 
 	return retorno;
 }
+
+
+

@@ -286,24 +286,34 @@ int controller_modificarVenta(LinkedList* listaVentas, LinkedList* listaClientes
 				case 1:
 						if(getNombre("\n*>Ingrese el nombre para modificar: \n", "\nError, vuelva a intentarlo..", nombre, 3, 128)==0)
 						{
-							venta_setNombreVenta(aux, nombre);
-							break;
+							if(venta_setNombreVenta(aux, nombre)==0)
+							{
+								ll_set(listaVentas, indiceVenta, aux);
+								break;
+							}
+
 						}
 					break;
 
 				case 2:
 						if(getInt("\n*>Ingrese la ubicacion donde quiere colocar el afiche para modificar.\nOpcion 1: CABA\nOpcion 2: ZONA SUR\nOpcion 3: ZONA OESTE \nOPCION ELEGIDA: ", "\nError, vuelva a intentarlo..", &destino,2,3,1)==0)
 						{
-							venta_setDestino(aux, destino);
-							break;
+							if(venta_setDestino(aux, destino)==0)
+							{
+								ll_set(listaVentas, indiceVenta, aux);
+								break;
+							}
 						}
 					break;
 
 				case 3:
 						if(getNumero("\n*>Ingrese la cantidad de afiches para modificar: ", "\nError, vuelva a intentarlo..", cantidadAfiches, 3,128)==0)
 						{
-							venta_setCantidadAfiches(aux, atoi(cantidadAfiches));
-							break;
+							if(venta_setCantidadAfiches(aux, atoi(cantidadAfiches))==0)
+							{
+								ll_set(listaVentas, indiceVenta, aux);
+								break;
+							}
 						}
 					break;
 				}
@@ -333,8 +343,7 @@ int controller_modificarCliente(LinkedList* listaClientes)
 	char nombre[128];
 	char apellido[128];
 	char cuit[128];
-	int destino;
-	char cantidadAfiches[128];
+
 
 	if( listaClientes!=NULL && ll_isEmpty(listaClientes)==0)
 	{
@@ -343,7 +352,7 @@ int controller_modificarCliente(LinkedList* listaClientes)
 		{
 			getInt("\n\n*>Ingrese el ID del cliente a modificar: ", "ERROR Vuelva a intentarlo...", &idCliente, 3, 80000000,1);
 		}
-		cliente_buscarIndicePorId(listaClientes, idCliente, indiceCliente);
+		cliente_buscarIndicePorId(listaClientes, idCliente, &indiceCliente);
 		clienteAux=ll_get(listaClientes, indiceCliente);
 
 		if(clienteAux!=NULL)
@@ -497,7 +506,7 @@ int controller_removeCliente(LinkedList* listaCliente)
 			{
 				bufferCliente = ll_get(listaCliente, indiceABorrar);
 				ll_remove(listaCliente, indiceABorrar);
-				employee_borrar(listaCliente);
+				cliente_borrar(bufferCliente);
 					printf("\n*>Cliente borrado con exito\n");
 					retorno = 0;
 			}
@@ -530,9 +539,9 @@ int controller_removeVenta(LinkedList* listaVenta)
 		{
 			if(venta_buscarIndicePorId(listaVenta,idABuscar,&indiceABorrar)==0)
 			{
-				bufferVenta = ll_get(listaVenta, indiceABorrar);
+				bufferVenta = (Venta*)ll_get(listaVenta, indiceABorrar);
 				ll_remove(listaVenta, indiceABorrar);
-				employee_borrar(listaVenta);
+				venta_borrar(bufferVenta);
 					printf("\n*>Venta borrada con exito\n");
 					retorno = 0;
 			}
