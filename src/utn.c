@@ -31,6 +31,7 @@ int getInt(char* mensaje, char* mensajeError, int* pResultado,int reintentos,int
 {
 	int retorno = -1;
 	char bufferChar[4096];
+	int bufferInt;
 	if(		mensaje != NULL &&
 			mensajeError != NULL &&
 			pResultado != NULL &&
@@ -42,11 +43,15 @@ int getInt(char* mensaje, char* mensajeError, int* pResultado,int reintentos,int
 			printf("%s",mensaje);
 			fflush(stdin);
 			if(myGets(bufferChar,LIMITE_NOMBRE) == 0 && strnlen(bufferChar,sizeof(bufferChar)-1)<= 4096 &&
-					esNumerica(bufferChar,4096) != 0 )
+					esNumerica(bufferChar,4096) == 1)
 						{
-							retorno=0;
-							*pResultado=atoi(bufferChar);
-							break;
+							bufferInt=atoi(bufferChar);
+							if(bufferInt >= minimo && bufferInt<= maximo)
+							{
+								*pResultado = bufferInt;
+								retorno = 0;
+								break;
+							}
 						}
 			else
 			{
@@ -224,7 +229,7 @@ int esUnNombreValido(char* cadena,int limite)
 
 		if(	(cadena[i] < 'A' || cadena[i] > 'Z') &&
 			(cadena[i] < 'a' || cadena[i] > 'z') &&
-			cadena[i]!=' ' && cadena[i]!='.')
+			cadena[i]!=' ' && cadena[i]!='.' && cadena[i]!=','&& cadena[i]!='-')
 		{
 			respuesta = 0;
 			break;
@@ -246,6 +251,7 @@ static int myGets(char* cadena, int longitud)
 				{
 					bufferString[strnlen(bufferString,sizeof(bufferString))-1] = '\0';
 				}
+
 				if(strlen(bufferString) <= longitud)
 				{
 					strncpy(cadena,bufferString,longitud);
@@ -300,6 +306,102 @@ int esAlfaNumerica(char* pResultado)
 	}
 	return retorno;
 }
+/*
+int utn_getCuit(char* mensaje,char* mensajeError,int* pResultado, int reintentos, int limite)
+{
+	int retorno=-1;
+	char bufferChar[LIMITE_NOMBRE];
+	bufferChar[2]='-';
+	bufferChar[11]='-';
+
+		if(mensaje!=NULL && mensajeError!=NULL && pResultado!=NULL && reintentos>0 && limite > 0)
+		{
+			do
+			{
+				printf("%s",mensaje);
+				if(myGets(bufferChar,LIMITE_NOMBRE) == 0 && strnlen(bufferChar,sizeof(bufferChar)-1)<= limite &&
+						esCuit(bufferChar) != 0 )
+				{
+					retorno=0;
+					*pResultado=atoi(bufferChar);
+					break;
+				}
+				else
+				{
+					printf("%s\n",mensajeError);
+					reintentos--;
+				}
+			}while(reintentos>=0);
+
+		}
+
+
+	return retorno;
+}
+
+int esCuit(char* pResultado)
+{
+	int retorno = 1;
+	int i;
+	if(pResultado != NULL)
+	{
+		for(i=0;pResultado[i] != '\0';i++)
+		{
+			if((pResultado[i] != ' ') && (pResultado[i] < '0' || pResultado[i] > '9'))
+			{
+				retorno = 0;
+				break;
+			}
+		}
+	}
+	return retorno;
+}*/
+
+int getNumero(char* mensaje,char* mensajeError,char* pResultado, int reintentos, int limite)
+{
+	int retorno = -1;
+	char bufferChar[LIMITE_NOMBRE];
+
+	if(mensaje!=NULL && mensajeError!=NULL && pResultado!=NULL && reintentos>0 && limite > 0)
+	{
+		do
+		{
+			printf("%s",mensaje);
+			if(myGets(bufferChar,LIMITE_NOMBRE) == 0 && strnlen(bufferChar,sizeof(bufferChar)-1)<= limite &&
+					esNumerica(bufferChar,limite) != 0 )
+			{
+				retorno=0;
+				strncpy(pResultado,bufferChar,limite);
+				break;
+			}
+			else
+			{
+				printf("%s\n",mensajeError);
+				reintentos--;
+			}
+		}while(reintentos>=0);
+
+	}
+return retorno;
+}
+int esUnTextoValido(char* cadena,int limite)
+{
+	int respuesta = 1;
+	for(int i=0; i<=limite && cadena[i] != '\0';i++)
+	{
+
+		if(	(cadena[i] < 'A' || cadena[i] > 'Z') &&
+			(cadena[i] < 'a' || cadena[i] > 'z') &&
+			cadena[i]!=' ' && cadena[i]!='.' && cadena[i]!='@' &&
+			(cadena[i]<'0' || cadena[i]>'9')&& cadena[i]!=','&& cadena[i]!='-'&& cadena[i]!='_')
+		{
+			respuesta = 0;
+			break;
+		}
+	}
+	return respuesta;
+}
+
 
 int utn_getCuit(char* mensaje,char* mensajeError,int* pResultado, int reintentos, int limite)
 {
@@ -349,49 +451,4 @@ int esCuit(char* pResultado)
 		}
 	}
 	return retorno;
-}
-
-int getTexto(char* mensaje,char* mensajeError,char* pResultado, int reintentos, int limite)
-{
-	int retorno = -1;
-	char bufferChar[LIMITE_NOMBRE];
-
-	if(mensaje!=NULL && mensajeError!=NULL && pResultado!=NULL && reintentos>0 && limite > 0)
-	{
-		do
-		{
-			printf("%s",mensaje);
-			if(myGets(bufferChar,LIMITE_NOMBRE) == 0 && strnlen(bufferChar,sizeof(bufferChar)-1)<= limite &&
-					esUnTextoValido(bufferChar,limite) != 0 )
-			{
-				retorno=0;
-				strncpy(pResultado,bufferChar,limite);
-				break;
-			}
-			else
-			{
-				printf("%s\n",mensajeError);
-				reintentos--;
-			}
-		}while(reintentos>=0);
-
-	}
-return retorno;
-}
-int esUnTextoValido(char* cadena,int limite)
-{
-	int respuesta = 1;
-	for(int i=0; i<=limite && cadena[i] != '\0';i++)
-	{
-
-		if(	(cadena[i] < 'A' || cadena[i] > 'Z') &&
-			(cadena[i] < 'a' || cadena[i] > 'z') &&
-			cadena[i]!=' ' && cadena[i]!='.' && cadena[i]!='@' &&
-			(cadena[i]<'0' || cadena[i]>'9'))
-		{
-			respuesta = 0;
-			break;
-		}
-	}
-	return respuesta;
 }

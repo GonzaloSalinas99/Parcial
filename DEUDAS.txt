@@ -1,0 +1,6 @@
+3,ana,maria,7688293,0
+4,carolina,horis,2131231,0
+5,ricardo,fort,12312348,0
+6,moria,casan,199999,0
+7,Hugo,Salinas,369856,0
+8,Hugo,Salinas,6978743,0

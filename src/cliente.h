@@ -1,44 +1,45 @@
-/*
- * employee.h
- *
- *  Created on: 25 sept. 2020
- *      Author: Gonzalo
- */
-#ifndef CLIENTE_H_
-#define CLIENTE_H_
+#ifndef cliente_H_INCLUDED
+#define cliente_H_INCLUDED
+
 #define TRUE 1
 #define FALSE 0
-#define LIMITE_NOMBRE 50
-#define QTY_CUIT 13
+#include "LinkedList.h"
+#define LEN_CUIT 11
 
 typedef struct
 {
-	char nombreCliente[LIMITE_NOMBRE];
-	char apellidoCliente[LIMITE_NOMBRE];
-	int cuitCliente;
-	int idCliente;
-	int isEmpty;
+	char nombre[128];
+	char apellido[128];
+    int id;
+    char cuit[LEN_CUIT];
 }Cliente;
 
+Cliente* cliente_new();
+Cliente* cliente_newParametros(char* nombre,char* apellido,char* id,char* cuit);
+void cliente_borrar(Cliente* this);
+
+int cliente_setId(Cliente* this,int id);
+int cliente_getId(Cliente* this,int* id);
+
+int cliente_setNombre(Cliente* this,char* nombre);
+int cliente_getNombre(Cliente* this,char* nombre);
+
+int cliente_setApellido(Cliente* this,char* apellido);
+int cliente_getApellido(Cliente* this,char* apellido);
+
+int cliente_setCuit(Cliente* this,char* cuit);
+int cliente_getCuit(Cliente* this,char* cuit);
+
+int cliente_imprimirUnCliente(void* pElement);
+int cliente_generarId(LinkedList* this);
+int cliente_buscarIndicePorId(LinkedList* this, int idABuscar,int* index);
+int cliente_ordenarPorNombre (void* thisA, void* thisB);
+
+int cliente_buscarPorId(LinkedList* this,int id);
+int cliente_estaRepetido(void* this,void* cuit);
+int cliente_verificarCuit(LinkedList* this,void* pElement);
+int cliente_buscarCuit(LinkedList* this,void*pElement);
+
 int cliente_menu(int* pOpcion);
-int cliente_report(int* pOpcion);
 
-int cliente_init(Cliente * pArray, int limite);
-void cliente_hardcodeo(Cliente* pArray,int indice, char* nombre,char* apellido, int cuit, int id);
-
-int cliente_alta(Cliente * pArray, int limite);
-int cliente_baja (Cliente * pArray, int limite);
-int cliente_modificar (Cliente * pArray, int limite);
-
-int cliente_imprimir(Cliente* pArray, int len);
-int cliente_imprimirPorId(Cliente* pArray, int len, int id);
-
-int cliente_buscarLibre (Cliente * pArray, int limite);
-int cliente_buscarLibreRef (Cliente * pArray, int limite, int * pIndice);
-
-int cliente_buscarIndicePorId (Cliente * pArray, int limite, int idBuscar,int * pIndice);
-int cliente_ordenarPorNombre (Cliente * pArray, int limite , int orden);
-
-
-
-#endif /* CLIENTE_H_ */
+#endif // cliente_H_INCLUDED

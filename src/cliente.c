@@ -1,374 +1,442 @@
-/*
- * employee.c
- *
- *  Created on: 25 sept. 2020
- *      Author: Gonzalo
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-
-#include "cliente.h"
+#include "Cliente.h"
 #include "utn.h"
-#include "aviso.h"
+#include "LinkedList.h"
+/*
+ * brief Asigna un lugar en memoria para un empleado
+ * return Puntero al empleado
+ */
+Cliente* cliente_new(void)
+{
+	return (Cliente*)malloc(sizeof(Cliente));
+}
+/*
+ * brief Carga, a travez de variables, los campos de un empleado
+ * param char* idStr Id a ser cargado
+ * param char* nombreStr Nombre a ser cargado
+ * param char* horasTrabajadasStr Horas a ser cargadas
+ * param char* sueldo Sueldo a ser cargado
+ * return Puntero al nuevo empleado
+ */
+Cliente* cliente_newParametros(char* nombre,char* apellido,char* id,char* cuit)
+{
+	Cliente* this = cliente_new();
 
-static int cliente_generarNuevoId (void);
+	if(nombre !=NULL && apellido!=NULL && id!=NULL && cuit!= NULL)
+	{
+			cliente_setNombre(this, nombre);
+			cliente_setApellido(this, apellido);
+			cliente_setId(this, atoi(id));
+			cliente_setCuit(this,cuit);
+		}
+	return this;
+}
+/*
+ * brief Libera el espacio de memoria de un empleado
+ */
+void cliente_borrar(Cliente* this)
+{
+	if(this!=NULL)
+	{
+		free(this);
+	}
+}
+
 
 /*
- *brief Menu de opciones
- *param int* pOpcion Direccion de memoria de la variable donde escribe el valor ingresado por el usuario
- *return (0) si se ingreso correctamente la opcion (-1) Si la opcion es invalida
+ * brief Escribe en el campo ID
+ * param Cliente* this puntero a cliente
+ * param int id ID a cargar
+ * return (0) si salio todo bien (-1)si hubo un error
  */
-int cliente_menu(int* pOpcion)
+int cliente_setId(Cliente* this,int id)
+{
+    int retorno = -1;
+
+    if(this != NULL && id >= 0)
+    {
+        this->id = id;
+        retorno = 0;
+    }
+    return retorno;
+}
+/*
+ * brief Duevuelve el ID
+ * param Cliente* this puntero a cliente
+ * param int* id puntero donde devuelve el valor
+ * return (0) si salio todo bien (-1)si hubo un error
+ */
+int cliente_getId(Cliente* this,int* id)
+{
+    int retorno = -1;
+
+    if(this != NULL && id != NULL)
+    {
+        *id = this->id;
+        retorno = 0;
+    }
+    return retorno;
+}
+
+/*
+ * brief Escribe en el campo Nombre
+ * param Cliente* this puntero a cliente
+ * param char* nombre Nombre a cargar
+ * return (0) si salio todo bien (-1)si hubo un error
+ */
+int cliente_setNombre(Cliente* this,char* nombre)
+{
+    int retorno = -1;
+
+    if(this != NULL && nombre != NULL)
+    {
+        if(esUnNombreValido(nombre, 128) == 1)
+        {
+            strncpy(this->nombre, nombre, 128);
+            retorno = 0;
+        }
+    }
+    return retorno;
+}
+/*
+ * brief Devuelve nombre
+ * param Cliente* this puntero a cliente
+ * param char* nombre puntero donde devuelve el valor
+ * return (0) si salio todo bien (-1)si hubo un error
+ */
+int cliente_getNombre(Cliente* this,char* nombre)
+{
+    int retorno = -1;
+    // char aux[18]="GONZALO";
+    if(this != NULL && nombre != NULL)// && esUnNombreValido(this->nombre,128) == 1)
+    {
+        strncpy(nombre,this->nombre, 128);
+        retorno = 0;
+    }
+    return retorno;
+
+}
+
+/*
+ * brief Escribe en el campo Apellido
+ * param Cliente* this puntero a cliente
+ * param char* apellido Apellido a cargar
+ * return (0) si salio todo bien (-1)si hubo un error
+ */
+int cliente_setApellido(Cliente* this,char* apellido)
+{
+    int retorno = -1;
+
+    if(this != NULL && apellido != NULL)
+    {
+        if(esUnNombreValido(apellido, 128) == 1)
+        {
+            strncpy(this->apellido, apellido, 128);
+            retorno = 0;
+        }
+    }
+    return retorno;
+}
+/*
+ * brief Devuelve apellido
+ * param Cliente* this puntero a cliente
+ * param char* apellido puntero donde devuelve el valor
+ * return (0) si salio todo bien (-1)si hubo un error
+ */
+int cliente_getApellido(Cliente* this,char* apellido)
+{
+    int retorno = -1;
+    // char aux[18]="GONZALO";
+    if(this != NULL && apellido != NULL && esUnNombreValido(this->apellido,128) == 1)
+    {
+        strncpy(apellido,this->apellido, 128);
+        retorno = 0;
+    }
+    return retorno;
+}
+
+/*
+ * brief Escribe en el campo Sueldo
+ * param Cliente* this puntero a cliente
+ * param char* cuit cuit a cargar
+ * return (0) si salio todo bien (-1)si hubo un error
+ */
+int cliente_setCuit(Cliente* this,char* cuit)
+{
+    int retorno = -1;
+
+    if(this != NULL)
+    {
+    	strncpy(this->cuit,cuit,LEN_CUIT);
+
+    }
+    return retorno;
+}
+/*
+ * brief Devuelve el cuit
+ * param Cliente* this puntero a empleado
+ * param char* cuit puntero donde devuelve el valor
+ * return (0) si salio todo bien (-1)si hubo un error
+ */
+int cliente_getCuit(Cliente* this,char* cuit)
+{
+    int retorno = -1;
+
+    if(this != NULL && cuit != NULL)
+    {
+    	strncpy(cuit,this->cuit,LEN_CUIT);
+
+    	retorno=0;
+    }
+    return retorno;
+}
+/*
+ * brief Imprime la lista de empleados
+ * param LinkedList pArrayListCliente puntero a la lista enlazada a empleados
+ * param int index Indice del empleado a imprimir
+ * return (0)si salio todo bien (-1)si hubo un error
+ */
+int cliente_imprimirUnCliente(void* pElement)
+{
+	int retorno=0;
+	Cliente* aux=(Cliente*)pElement;
+	int idCliente;
+	char nombre[128];
+	char apellido[128];
+	char cuit[LEN_CUIT];
+
+	if(pElement!=NULL)
+	{
+		cliente_getId(aux, &idCliente);
+		cliente_getNombre(aux, nombre);
+		cliente_getApellido(aux, apellido);
+		cliente_getCuit(aux, cuit);
+		printf("\n%-10d    %-20s     %-20s     %-10s",idCliente,nombre,apellido,cuit);
+		retorno=0;
+
+	}
+	return retorno;
+}
+
+/*
+ * brief Genera un ID Maximo
+ * param LinkedList pArrayListCliente puntero a la lista enlazada a empleados
+ * return (0)si salio todo bien (-1)si hubo un error
+ */
+int cliente_generarId(LinkedList* this)
+{
+    Cliente* auxiliar;
+    int cant;
+    int auxId;
+    int maxID = -1;
+    int i;
+    if(this != NULL)
+    {
+        cant = ll_len(this);
+        for(i=0;i<cant;i++)
+        {
+            auxiliar = ll_get(this, i);
+            cliente_getId(auxiliar, &auxId);
+            if(auxId > maxID)
+            {
+                maxID = auxId;
+            }
+        }
+    }
+    maxID += 1;
+    return maxID;
+}
+/*
+ * brief Busca la posicion de un empleado por el ID
+ * param LinkedList this puntero a la lista enlazada a empleados
+ * param int idABuscas ID a ser buscado
+ * param int* index puntero donde devuelve el indice del ID busca
+ * return (0)si salio todo bien (-1)si hubo un error
+ */
+int cliente_buscarIndicePorId(LinkedList* this, int idABuscar,int* index)
+{
+	int retorno = -1;
+	int i;
+	int len;
+	int idAux;
+	Cliente* bufferCliente;
+
+	if(this!= NULL && idABuscar>0 && index!=NULL)
+	{
+		len = ll_len(this);
+		if(len>0)
+		{
+			for(i=0;i<len;i++)
+			{
+				bufferCliente = ll_get(this, i);
+				cliente_getId(bufferCliente,&idAux);
+				if(idAux == idABuscar)
+				{
+					*index = i;
+					retorno=0;
+				}
+			}
+		}
+	}
+	return retorno;
+}
+
+
+
+/*
+ * brief Ordena por nombre
+ * param void* thisA puntero donde se recibira el primer empleado
+ * param void* thisA puntero donde se recibira el segundo empleado
+ * return (0)si salio todo bien (-1)si hubo un error
+ */
+
+/*
+int cliente_ordenarPorNombre (void* thisA, void* thisB)
 {
 	int retorno;
-
-	printf("\n\n*************BIENVENIDO*************\n\n");
-	printf("****************************************\n\n");
-	printf("*INGRESE LA OPCION QUE DESEE\n");
-	printf("*>OPCION 1: ALTA A CLIENTE.\n");
-	printf("*>OPCION 2: MODIFICAR DATOS CLIENTE.\n");
-	printf("*>OPCION 3: BAJA A CLIENTE.\n");
-	printf("*>OPCION 4: ALTA PUBLICACION.\n");
-	printf("*>OPCION 5: PAUSAR PUBLICACION.\n");
-	printf("*>OPCION 6: REANUDAR PUBLICACION.\n");
-	printf("*>OPCION 7: IMPRIMIR LISTA CLIENTES.\n");
-	printf("*>OPCION 8: IMFORMES.\n");
-	printf("*>OPCION 9: SALIR.\n");
-
-	getInt("\ningresa la opcion: ","Error",&retorno,3,5,1);
-	*pOpcion=retorno;
-	return retorno;
-}
-/*
- *brief Menu de informes del programa
- *param int* pOpcion Direccion de memoria de la variable donde escribe el valor ingresado por el usuario
- *return (0) si se ingreso correctamente la opcion (-1) Si la opcion es invalida
- */
-int cliente_report(int* pOpcion)
-{
-	int retorno;
-	printf("\n\n*************INFORMES*************\n\n");
-	printf("****************************************\n\n");
-	printf("*INGRESE LA OPCION QUE DESEE\n");
-	printf("*>OPCION 1: ORDENAR.\n");
-	printf("*>OPCION 2: IMPRIMIR.\n");
-	printf("*>OPCION 3: PROMEDIO SALARIO Y CUANTOS EMPLEADOS SUPERAN ESTE PROMEDIO.\n");
-	printf("*>OPCION 4: VOLVER AL MENU PRINCIPAL.\n");
-
-
-	getInt("\ningresa la opcion: ","Error",&retorno,3,4,1);
-	*pOpcion=retorno;
-	return retorno;
-}
-
-/*
- * brief Inicia la lista en todas sus posiciones como VACIAS
- * param Cliente* pArray lista de Clientes
- * param limite cantidad de posiciones que tiene la lista
- * return (-1) si ocurrio un error (0) si salio todo bien
- */
-int cliente_init(Cliente * pArray, int limite)
-{
-	int retorno = -1;
-	if (pArray != NULL && limite >0){
-		for (int i = 0; i<limite; i++ )
-		{
-			pArray[i].isEmpty = TRUE;
-		}
-		retorno = 0;
-	}
-
-	return retorno;
-}
-/*
- * brief Hardcodea la lista de Clientes
- * param Clientes* pArray lista de Clentes
- * param indice Posicion de la lista
- * param *nombre Nombre a guardar
- * param *apellido Apellido a guardar
- * param cuit Cuit a guardar
- * param id ID del cliente a guardar
- */
-void cliente_hardcodeo(Cliente* pArray,int indice,char* nombre,char* apellido, int cuit, int id)
-{
-	strncpy(pArray[indice].nombreCliente,nombre,LIMITE_NOMBRE);
-	strncpy(pArray[indice].apellidoCliente,apellido,LIMITE_NOMBRE);
-	pArray[indice].cuitCliente=cuit;
-	pArray[indice].idCliente=id;
-	pArray[indice].isEmpty = FALSE;
-}
-/*
- * brief Genera un ID unico e irrepetible
- * return Devuelve el ID generado
- */
-static int cliente_generarNuevoId (void) {
-	static int id = 0;
-	id = id+1;
-	return id;
-}
-/*
- * brief Le da el ALTA al cliente luego de validar todos los datos
- * param Cliente* pArray lista de Clientes
- * param limite Cantidad de posiciones que tiene la lista de Clientes
- * return (-1) si ocurrio un error (0) si salio todo bien
- */
-int cliente_alta(Cliente * pArray, int limite)
-{
-	int retorno = -1;
-	int indice;
-	Cliente bufferCliente;
-
-	if (pArray != NULL && limite >0)
+	Cliente* auxA =(Cliente*)thisA;
+	Cliente* auxB =(Cliente*)thisB;
+	char nombreA[128];
+	char nombreB[128];
+	int respuesta;
+	cliente_getNombre(auxA, nombreA);
+	cliente_getNombre(auxB, nombreB);
+	respuesta=strncmp(nombreA,nombreB,128);
+	if(respuesta>0)
 	{
-			if (cliente_buscarLibreRef (pArray, limite, &indice) == 0)
-			{
-					if (getNombre("\nIngrese su nombre: \n", "error",bufferCliente.nombreCliente,2,LIMITE_NOMBRE) == 0 &&
-						getNombre("Ingrese su apellido: \n", "error",bufferCliente.apellidoCliente,2,LIMITE_NOMBRE) ==0 &&
-						utn_getCuit("Ingrese su cuit: ","ERROR",&bufferCliente.cuitCliente,3,QTY_CUIT) == 0)
-					{
-							pArray[indice] = bufferCliente;
-							pArray[indice].idCliente = cliente_generarNuevoId();
-							pArray[indice].isEmpty = FALSE;
-							retorno=0;
-					}
-					else
-					{
-						printf("ERROR");
-					}
-			}
-			else
-			{
-				printf(" \n No quedan espacios libres");
-			}
+		retorno=1;
 	}
-	return retorno ;
-}
-
-/*
- * brief Le da el BAJA al cliente luego de validar todos los datos
- * param Cliente* pArray lista de Clientes
- * param limite cantidad de posiciones que tiene la lista de Clientes
- * return (-1) si ocurrio un error (0) si salio todo bien
- */
-int cliente_baja (Cliente * pArray, int limite)
-{
-	int retorno = -1;
-	int idABorrar;
-	int indiceABorrar;
-
-	if (pArray != NULL && limite>0)
+	else if(respuesta<0)
 	{
-		cliente_imprimir(pArray, limite);
-		if(getInt("Ingrese ID de cliente a borrar","Error",&idABorrar,3,1000,0)==0)
-		{
-			if(cliente_buscarIndicePorId(pArray,limite,idABorrar,&indiceABorrar)==0)
-			{
-				pArray[indiceABorrar].isEmpty=TRUE;
-			}
-		}
+		retorno=-1;
 	}
-	return retorno;
-}
-
-/*
- * brief Modifica los datos de un cliente cargado
- * param Cliente* pArray lista de Clientes
- * param limite cantidad de posiciones que tiene la lista de Clientes
- * return (-1) si ocurrio un error (0) si salio todo bien
- */
-int cliente_modificar (Cliente * pArray, int limite)
-{
-	int retorno = -1;
-	int idBuscar;
-	int indiceAModificar;
-	Cliente bufferCliente;
-
-	if (pArray != NULL && limite>0)
+	else
 	{
-		cliente_imprimir(pArray,limite);
-		if(getInt("\ningrese el ID del cliente que quiere modificar: ","ERROR",&idBuscar,3,100,0)==0)
-		{
-			if(cliente_buscarIndicePorId(pArray,limite,idBuscar,&indiceAModificar)==0)
-			{
-				bufferCliente=pArray[indiceAModificar];
-				if (getNombre("Ingrese su nombre: \n", "error",bufferCliente.nombreCliente,2,LIMITE_NOMBRE) == 0 &&
-					getNombre("Ingrese su apellido: \n", "error",bufferCliente.apellidoCliente,2,LIMITE_NOMBRE) == 0 &&
-					utn_getCuit("Ingrese su cuit: ","ERROR",&bufferCliente.cuitCliente,3,QTY_CUIT) == 0)
-				{
-						pArray[indiceAModificar] = bufferCliente;
-						pArray[indiceAModificar].isEmpty = FALSE;
-						retorno=0;
-				}
-				else
-				{
-					printf("ERROR");
-				}
-			}
-		}
-	}
-return retorno;
-}
-/*
- * brief Imprime la lista de Clientes
- * param Cliente* pArray lista de Clientes
- * param limite cantidad de posiciones que tiene la lista de Clientes
- * return (-1) si ocurrio un error (0) si salio todo bien
- */
-int cliente_imprimir(Cliente* pArray, int len)
-{
-	int retorno = -1;
-	if(pArray != NULL && len > 0)
-	{
-		printf("\t\t\t****CLIENTES****\n");
-		printf("ID\t NOMBRE \t\t\t\t APELLIDO \t\t\t\t CUIT\n");
-		for(int i=0;i<len;i++)
-		{
-			if(pArray[i].isEmpty == FALSE)
-			{
-				printf("\n%d\t %s  \t\t\t\t %s  \t\t\t\t %d",pArray[i].idCliente,pArray[i].nombreCliente,pArray[i].apellidoCliente,pArray[i].cuitCliente);
-
-			}
-		}
 		retorno = 0;
 	}
 	return retorno;
 }
+*/
+
 /*
- * brief Imprime la lista lista de Clientes por ID
- * param Cliente* pArray lista de Clientes
- * param len cantidad de posiciones que tiene la lista de Clientes
- * param idCliente ID del cliente el cual vamos a imprimir
- * return (-1) si ocurrio un error (0) si salio todo bien
+ * brief Verifica si el ID del Cliente, coincide con el ID pasado por parametro
+ * param LinkedList this puntero a la lista enlazada a clientes
+ * param int id ID a ser buscado
+ * return (0)si salio todo bien (-1)si hubo un error
  */
-int cliente_imprimirPorId(Cliente* pArray, int len, int id)
+int cliente_buscarPorId(LinkedList* this,int id)
 {
 	int retorno=-1;
+	int idCliente;
+	int len=ll_len(this);
+	Cliente* aux;
 
-	if(pArray != NULL && len > 0 && id>=0)
+	if(this!= NULL && id>0)
+	{
+		for(int i=0;i<len;i++)
 		{
-			printf("ID\t NOMBRE \t\t\t APELLIDO \t\t CUIT\n");
-			for(int i=0;i<len;i++)
+			aux=(Cliente*)ll_get(this,i);
+			if(cliente_getId(aux,&idCliente)==0)
 			{
-				if(pArray[i].idCliente==id && pArray[i].isEmpty == FALSE )
+				if(id==idCliente)
 				{
-					printf("%d\t %s\t\t\t %s\t\t %d \n",pArray[i].idCliente,pArray[i].nombreCliente,pArray[i].apellidoCliente,pArray[i].cuitCliente);
-
-				}
-			}
-			retorno = 0;
-		}
-	return retorno;
-}
-
-/*
- * brief Busca en la lista de Clientes un lugar libre
- * param Cliente* pArray lista de Clientes
- * param limite cantidad de posiciones que tiene la lista de Clientes
- * return devuelve la posicion libre en la lista
- */
-int cliente_buscarLibre (Cliente * pArray, int limite)
-{
-	int retorno = -1;
-	int i ;
-		if (pArray != NULL && limite >0)
-		{
-			for ( i = 0; i<limite; i++)
-			{
-				if(pArray[i].isEmpty == TRUE)
-				{
-					retorno = i;
+					retorno=0;
 					break;
 				}
 			}
 		}
-	return retorno;
-}
-/*
- * brief Busca en la lista de Clientes un lugar libre
- * param Clientes* pArray lista de Clientes
- * param limite cantidad de posiciones que tiene la lista de Clientes
- * param pIndice direccion de memoria donde se escribiria el resultado
- * return (-1) si ocurrio un error (0) si salio todo bien
- */
-int cliente_buscarLibreRef (Cliente * pArray, int limite, int * pIndice){
-	int retorno = -1;
-	int i ;
-		if (pArray != NULL && limite >0 && pIndice != NULL){
-			for ( i = 0; i<limite; i++) {
-				if(pArray[i].isEmpty == TRUE)
-					{
-						*pIndice = i;
-						retorno = 0;
-						break;
-					}
-			}
-		}
-	return retorno;
-}
-/*
- * brief Busca en la lista de Clientes un indice a travez del ID
- * param Cliente* pArray lista de Clientes
- * param limite cantidad de posiciones que tiene la lista de Clientes
- * param IdBuscar ID que es buscado en la lista de Clientes
- * param *pindice Direccion de memoria donde se escribira el indice encontrado
- * return devuelve la posicion libre en la lista
- */
-int cliente_buscarIndicePorId (Cliente * pArray, int limite,int idBuscar,int * pIndice)
-{
-	int retorno = -1;
-	int i ;
-		if (pArray != NULL && limite >0 && pIndice != NULL && idBuscar > 0)
-		{
-				for ( i = 0; i<limite; i++)
-				{
-					if( idBuscar == pArray[i].idCliente && pArray[i].isEmpty == FALSE)
-					{
-						*pIndice = i;
-						retorno = 0;
-						break;
-					}
-				}
-			}
-			else
-			{
-				printf("errrror");
-			}
-		return retorno;
-}
-/*
- * brief Ordenar lista de Clientes de forma Ascendente o Descendente
- * param Cliente* pArray lista de avisos
- * param limite cantidad de posiciones que tiene la lista de Clientes
- * param orden Numero ingresado por el usuario para saber de que manera ordenar la lista
- * return (-1) si ocurrio un error (0) si se pudo ordenar
- */
-int cliente_ordenarPorNombre (Cliente * pArray, int limite , int orden)
-{
-	int retorno = -1;
-	int estadoDesordenado = 1;
-	Cliente aux;
-	if (pArray != NULL && limite >0)
-	{
-		while(estadoDesordenado)
-		{
-			estadoDesordenado = 0;
-				for(int i = 0; i < (limite - 1); i++)
-				{
-					if((orden == 1 && strncmp(pArray[i].nombreCliente, pArray[i + 1].nombreCliente,LIMITE_NOMBRE)>0)
-							||
-					  (orden == 0 && strncmp(pArray[i].nombreCliente, pArray[i + 1].nombreCliente,LIMITE_NOMBRE)<0))
-					{
-						aux = pArray[i];
-						pArray[i] = pArray[i + 1];
-						pArray[i + 1] = aux;
-						estadoDesordenado = 1;
-					}
-				}
-		}
-		retorno = 0;
 	}
+	return retorno;
+}
+
+/*
+ * brief Compara el cuit del cliente con el que le pasaron por parametro
+ * param void*  puntero a un elemento
+ * param void* cuit puntero a un cuit
+ * return (0)si los cuits son diferentes (-1)si los cuits son iguales
+ */
+int cliente_estaRepetido(void* this,void* cuit)
+{
+	int retorno=0;
+	Cliente* aux=(Cliente*)this;
+	char cuitAVerificar[LEN_CUIT];
+
+	if(this!=NULL && cuit!=NULL)
+	{
+		if(cliente_getCuit(aux, cuitAVerificar)==0 && strncmp(cuitAVerificar,cuit,LEN_CUIT)==0)
+		{
+			retorno=-1;
+		}
+	}
+	return retorno;
+}
+
+/*
+ * brief Recorre la lista para comparar los cuits
+ * param LinkedList this puntero a la lista enlazada a empleados
+ * param void* pElement puntero a un elemento
+ * return (0)si salio todo bien (-1)si hubo un error en la comparacion
+ */
+int cliente_verificarCuit(LinkedList* this,void* pElement)
+{
+	int retorno=0;
+	Cliente* auxiliar;
+
+	if(this!=NULL)
+	{
+		for(int i=0;i<ll_len(this);i++)
+		{
+			auxiliar=ll_get(this,i);
+			if(cliente_estaRepetido(auxiliar, pElement)!=0)
+			{
+				retorno=-1;
+			}
+		}
+	}
+	return retorno;
+}
+
+/*
+ * brief Analiza si el cuit que le pasan por parametro esta repetido
+ * param LinkedList this puntero a la lista enlazada a empleados
+ * param void* pElement puntero a un elemento
+ * return (0)si esta repetido(-1)si no esta repetido
+ */
+int cliente_buscarCuit(LinkedList* this,void*pElement)
+{
+	int retorno=-1;
+
+	if(this!=NULL && ll_isEmpty(this)==0)
+	{
+		if(cliente_verificarCuit(this,pElement)!=0)
+		{
+			retorno=0;
+		}
+	}
+	return retorno;
+}
+
+/*
+ * brief Menu de opciones para modificar
+ * param int* pOpcion Puntero a donde devuelve el resultado obtenido
+ */
+int cliente_menu(int* pOpcion)
+{
+	int retorno;
+	printf("\n\n*************BIENVENIDO*************\n\n");
+	printf("****************************************\n\n");
+	printf("*************Modificar Cliente*************\n\n");
+	printf("*INGRESE LA OPCION QUE DESEE\n");
+	printf("*>OPCION 1: Nombre del cliente.\n");
+	printf("*>OPCION 2: Apellido del cliente.\n");
+	printf("*>OPCION 3: Cuit del cliente.\n");
+	printf("*>OPCION 4: Salir.\n");
+	printf("********************************************");
+
+	getInt("\nIngrese la opcion: ", "ERROR", &retorno, 3, 4, 1);
+	*pOpcion=retorno;
 	return retorno;
 }
